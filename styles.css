@@ -498,12 +498,82 @@ textarea {
   justify-self: stretch;
 }
 
+.firmness-dial {
+  position: relative;
+  width: min(100%, 360px);
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.firmness-label {
+  position: absolute;
+  z-index: 3;
+  width: 82px;
+  min-height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 8px;
+  padding: 6px 7px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  cursor: pointer;
+}
+
+.firmness-label:hover,
+.firmness-label.active {
+  color: var(--ink);
+  border-color: var(--yolk);
+  background: var(--yolk);
+}
+
+.firmness-label-liquid {
+  left: 1%;
+  top: 72%;
+}
+
+.firmness-label-runny {
+  left: 1%;
+  top: 45%;
+}
+
+.firmness-label-thickened {
+  left: 14%;
+  top: 17%;
+}
+
+.firmness-label-spreadable {
+  left: 50%;
+  top: 5%;
+  transform: translateX(-50%);
+}
+
+.firmness-label-creamy {
+  right: 14%;
+  top: 17%;
+}
+
+.firmness-label-set {
+  right: 1%;
+  top: 45%;
+}
+
+.firmness-label-hard {
+  right: 1%;
+  top: 72%;
+}
+
 .firmness-knob {
   --angle: 0deg;
   position: relative;
-  width: min(52vw, 168px);
+  z-index: 2;
+  width: min(48vw, 178px);
   aspect-ratio: 1;
-  margin: 2px 0;
+  margin-top: 20px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 50%;
   cursor: grab;
@@ -530,12 +600,56 @@ textarea {
   content: "";
   position: absolute;
   inset: 12%;
+  z-index: 1;
   border-radius: 50%;
   border: 1px solid rgba(255, 194, 71, 0.24);
 }
 
-.firmness-knob span {
+.firmness-knob-copy {
   position: absolute;
+  inset: 25%;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  border-radius: 50%;
+  color: var(--text);
+  text-align: center;
+  pointer-events: none;
+  background: rgba(18, 21, 29, 0.7);
+}
+
+.firmness-knob-copy strong,
+.firmness-knob-copy span,
+.firmness-knob-copy em {
+  display: block;
+}
+
+.firmness-knob-copy strong {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.firmness-knob-copy span {
+  color: var(--yolk);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.firmness-knob-copy em {
+  max-width: 92px;
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.firmness-pointer {
+  position: absolute;
+  z-index: 1;
   left: 50%;
   top: 50%;
   width: 7px;
@@ -548,20 +662,29 @@ textarea {
 }
 
 .target-scale {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  margin: 10px 0 14px;
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 800;
+  display: none !important;
 }
 
-.target-scale span:nth-child(2),
-.target-scale span:nth-child(3),
-.target-scale span:nth-child(4),
-.target-scale span:nth-child(5) {
-  text-align: center;
+@media (max-width: 380px) {
+  .firmness-dial {
+    min-height: 280px;
+  }
+
+  .firmness-label {
+    width: 72px;
+    min-height: 28px;
+    padding: 5px 6px;
+    font-size: 0.62rem;
+  }
+
+  .firmness-knob {
+    width: min(48vw, 158px);
+  }
+
+  .firmness-knob-copy em {
+    max-width: 78px;
+    font-size: 0.54rem;
+  }
 }
 
 .preset-grid,

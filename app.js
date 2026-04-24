@@ -155,6 +155,9 @@ function bindElements() {
     "bathTempOut",
     "airTempOut",
     "firmnessOut",
+    "firmnessDialLabel",
+    "firmnessDialAlias",
+    "firmnessDialCopy",
     "targetLabel",
     "cookTimeLabel",
     "protocolName",
@@ -199,6 +202,7 @@ function bindElements() {
   ].forEach((id) => {
     el[id] = document.getElementById(id);
   });
+  el.firmnessLabels = document.querySelectorAll("[data-firmness]");
 }
 
 function computeProtocol() {
@@ -468,9 +472,16 @@ function updateOutputs() {
   el.timeToBoilOut.value = `${state.timeToBoil} min`;
   el.bathTempOut.value = `${state.bathTemp} °C`;
   el.firmnessOut.value = `${protocol.label} / ${state.firmness}`;
+  el.firmnessDialLabel.textContent = protocol.label;
+  el.firmnessDialAlias.textContent = protocol.alias;
+  el.firmnessDialCopy.textContent = protocol.firmnessCopy;
   el.firmnessKnob.style.setProperty("--angle", `${-135 + state.firmness * 2.7}deg`);
   el.firmnessKnob.setAttribute("aria-valuenow", state.firmness);
   el.firmnessKnob.setAttribute("aria-valuetext", `${protocol.label} / ${state.firmness}`);
+  el.firmnessLabels.forEach((label) => {
+    const level = getFirmnessLevel(Number(label.dataset.firmness));
+    label.classList.toggle("active", level.label === protocol.label);
+  });
   el.targetLabel.textContent = protocol.label;
   el.cookTimeLabel.textContent = formatTime(protocol.seconds);
   el.protocolName.textContent = `${protocol.methodLabel} / ${state.weight}g / ${state.startTemp}°C egg`;
@@ -1924,6 +1935,9 @@ function wireEvents() {
   });
 
   el.firmnessKnob.addEventListener("keydown", handleFirmnessKey);
+  el.firmnessLabels.forEach((label) => {
+    label.addEventListener("click", () => setFirmness(Number(label.dataset.firmness)));
+  });
   el.startPause.addEventListener("click", handleStartPause);
   el.resetTimer.addEventListener("click", resetTimer);
   el.speedToggle.addEventListener("click", toggleTimerSpeed);

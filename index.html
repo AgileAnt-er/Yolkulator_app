@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Yolkulator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=ui-20260424-dial2">
   </head>
   <body>
     <main class="app-shell">
@@ -188,27 +188,33 @@
           <div class="control target-control">
             <span>Firmness index</span>
             <output id="firmnessOut">Creamy / 52</output>
-            <div
-              class="firmness-knob"
-              id="firmnessKnob"
-              role="slider"
-              tabindex="0"
-              aria-label="Firmness index"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              aria-valuenow="52"
-              aria-valuetext="Creamy / 52"
-            >
-              <span aria-hidden="true"></span>
+            <div class="firmness-dial">
+              <button class="firmness-label firmness-label-liquid" type="button" data-firmness="5">Liquid</button>
+              <button class="firmness-label firmness-label-runny" type="button" data-firmness="16">Runny</button>
+              <button class="firmness-label firmness-label-thickened" type="button" data-firmness="29">Thickened</button>
+              <button class="firmness-label firmness-label-spreadable" type="button" data-firmness="43">Spreadable</button>
+              <button class="firmness-label firmness-label-creamy" type="button" data-firmness="59">Creamy</button>
+              <button class="firmness-label firmness-label-set" type="button" data-firmness="76">Set</button>
+              <button class="firmness-label firmness-label-hard" type="button" data-firmness="92">Hard</button>
+              <div
+                class="firmness-knob"
+                id="firmnessKnob"
+                role="slider"
+                tabindex="0"
+                aria-label="Firmness index"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="52"
+                aria-valuetext="Creamy / 52"
+              >
+                <div class="firmness-knob-copy">
+                  <strong id="firmnessDialLabel">Creamy</strong>
+                  <span id="firmnessDialAlias">fudgy</span>
+                  <em id="firmnessDialCopy">dense, smooth, sliceable, no free liquid</em>
+                </div>
+                <span class="firmness-pointer" aria-hidden="true"></span>
+              </div>
             </div>
-          </div>
-
-          <div class="target-scale" aria-hidden="true">
-            <span>Runny</span>
-            <span>Spreadable</span>
-            <span>Creamy</span>
-            <span>Set</span>
-            <span>Hard</span>
           </div>
 
           <div class="preset-grid">
@@ -382,7 +388,7 @@
       </div>
     </main>
 
-    <script src="physics.js?v=ui-20260424"></script>
-    <script src="app.js?v=ui-20260424"></script>
+    <script src="physics.js?v=ui-20260424-dial2"></script>
+    <script src="app.js?v=ui-20260424-dial2"></script>
   </body>
 </html>
