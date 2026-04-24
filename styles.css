@@ -940,18 +940,8 @@ textarea {
     padding: 28px 22px 40px;
   }
 
-  .hero-lab {
-    grid-template-columns: minmax(320px, 0.95fr) 1.05fr;
-  }
-
   .egg-stage {
     min-height: 330px;
-  }
-
-  .protocol-summary {
-    display: block;
-    align-self: center;
-    padding: 28px;
   }
 
   .control-grid,
@@ -984,6 +974,16 @@ textarea {
 @media (min-width: 980px) {
   h1 {
     font-size: 4.4rem;
+  }
+
+  .hero-lab {
+    grid-template-columns: minmax(320px, 0.95fr) 1.05fr;
+  }
+
+  .protocol-summary {
+    display: block;
+    align-self: center;
+    padding: 28px;
   }
 
   .screen-stack {
