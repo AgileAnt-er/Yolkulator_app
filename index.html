@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yolkulator</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Protocol console</p>
+          <h1>Yolkulator</h1>
+        </div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          Lab local
+        </div>
+      </header>
+
+      <section class="hero-lab" aria-label="Current egg protocol">
+        <div class="egg-stage">
+          <canvas id="eggCanvas" width="280" height="240" aria-label="Predicted egg cross section"></canvas>
+          <div class="egg-readout">
+            <span id="targetLabel">Creamy</span>
+            <strong id="cookTimeLabel">07:42</strong>
+          </div>
+        </div>
+        <div class="protocol-summary">
+          <p class="summary-kicker">Active protocol</p>
+          <h2 id="protocolName">Specimen 58g / Fridge Start</h2>
+          <p id="protocolCopy">Yolk target locked. White set expected. Cold shock remains mandatory.</p>
+          <div class="metric-grid">
+            <div>
+              <span>Method</span>
+              <strong id="methodLabel">Hot start</strong>
+            </div>
+            <div>
+              <span>Core</span>
+              <strong id="coreTemp">70 °C center</strong>
+            </div>
+            <div>
+              <span>Boundary</span>
+              <strong id="boundaryTemp">100 °C</strong>
+            </div>
+            <div>
+              <span>Crack risk</span>
+              <strong id="riskLevel">Low</strong>
+            </div>
+            <div>
+              <span>Confidence</span>
+              <strong id="confidenceLevel">Medium</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Yolkulator screens">
+        <button class="tab active" type="button" data-screen="intake">Intake</button>
+        <button class="tab" type="button" data-screen="target">Target</button>
+        <button class="tab" type="button" data-screen="console">Console</button>
+        <button class="tab" type="button" data-screen="autopsy">Autopsy</button>
+        <button class="tab" type="button" data-screen="notebook">Notebook</button>
+        <button class="tab" type="button" data-screen="library">Library</button>
+      </nav>
+
+      <div class="screen-stack">
+        <section class="screen active" id="screen-intake">
+          <div class="section-heading">
+            <p class="eyebrow">Specimen intake</p>
+            <h2>Register the egg</h2>
+          </div>
+
+          <div class="control-grid">
+            <label class="control">
+              <span>Egg weight</span>
+              <output id="weightOut">58 g</output>
+              <input id="weight" type="range" min="40" max="85" value="58">
+            </label>
+
+            <label class="control">
+              <span>Batch size</span>
+              <output id="quantityOut">2 eggs</output>
+              <input id="quantity" type="range" min="1" max="12" value="2">
+            </label>
+
+            <label class="control">
+              <span>Start temperature</span>
+              <output id="startTempOut">5 °C</output>
+              <input id="startTemp" type="range" min="3" max="25" value="5">
+            </label>
+
+            <label class="control">
+              <span>Altitude</span>
+              <output id="altitudeOut">25 m</output>
+              <input id="altitude" type="range" min="0" max="2500" value="25" step="25">
+            </label>
+
+            <label class="control">
+              <span>Air temperature</span>
+              <output id="airTempOut">21 °C</output>
+              <input id="airTemp" type="range" min="0" max="40" value="21">
+            </label>
+          </div>
+
+          <fieldset class="segmented method-segmented">
+            <legend>Thermal method</legend>
+            <label>
+              <input type="radio" name="method" value="hot" checked>
+              <span>Hot start</span>
+            </label>
+            <label>
+              <input type="radio" name="method" value="cold">
+              <span>Cold start</span>
+            </label>
+            <label>
+              <input type="radio" name="method" value="bath">
+              <span>Bath</span>
+            </label>
+          </fieldset>
+
+          <div class="control-grid thermal-grid">
+            <label class="control">
+              <span>Water volume</span>
+              <output id="waterVolumeOut">1.5 L</output>
+              <input id="waterVolume" type="range" min="0.5" max="5" value="1.5" step="0.1">
+            </label>
+
+            <label class="control method-field" data-method-scope="cold">
+              <span>Start water temp</span>
+              <output id="waterStartTempOut">15 °C</output>
+              <input id="waterStartTemp" type="range" min="5" max="35" value="15">
+            </label>
+
+            <input id="timeToBoil" type="hidden" value="8">
+            <output id="timeToBoilOut" hidden>8 min</output>
+
+            <label class="control method-field" data-method-scope="bath">
+              <span>Bath temperature</span>
+              <output id="bathTempOut">65 °C</output>
+              <input id="bathTemp" type="range" min="55" max="90" value="65">
+            </label>
+          </div>
+
+          <fieldset class="segmented">
+            <legend>Water behavior</legend>
+            <label>
+              <input type="radio" name="vigor" value="gentle">
+              <span>Gentle</span>
+            </label>
+            <label>
+              <input type="radio" name="vigor" value="rolling" checked>
+              <span>Rolling</span>
+            </label>
+            <label>
+              <input type="radio" name="vigor" value="violent">
+              <span>Violent</span>
+            </label>
+          </fieldset>
+
+          <label class="control textarea-control">
+            <span>Pot note</span>
+            <textarea id="potNote" rows="3" placeholder="Small pot, lid on, emotionally stable water."></textarea>
+          </label>
+
+          <div class="simulation-panel">
+            <div class="simulation-heading">
+              <div>
+                <p class="eyebrow">Scenario sweep</p>
+                <h3>Simulate uncertainty</h3>
+              </div>
+              <button class="primary-action compact" id="simulateScenarios" type="button">Simulate</button>
+            </div>
+            <div class="scenario-matrix idle" id="scenarioMatrix" aria-label="Scenario simulation matrix"></div>
+            <div class="simulation-result" id="simulationResult">
+              <p>Run a sweep to see how often this protocol lands in the perfect zone when reality gets annoying.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-target">
+          <div class="section-heading">
+            <p class="eyebrow">Yolk target</p>
+            <h2>Choose the texture</h2>
+          </div>
+
+          <div class="control target-control">
+            <span>Firmness index</span>
+            <output id="firmnessOut">Creamy / 52</output>
+            <div
+              class="firmness-knob"
+              id="firmnessKnob"
+              role="slider"
+              tabindex="0"
+              aria-label="Firmness index"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="52"
+              aria-valuetext="Creamy / 52"
+            >
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <div class="target-scale" aria-hidden="true">
+            <span>Runny</span>
+            <span>Spreadable</span>
+            <span>Creamy</span>
+            <span>Set</span>
+            <span>Hard</span>
+          </div>
+
+          <div class="preset-grid">
+            <button class="preset-card" type="button" data-preset="ramen">
+              <strong>Ramen yolk</strong>
+              <span>Thickened center, smug finish.</span>
+            </button>
+            <button class="preset-card" type="button" data-preset="breakfast">
+              <strong>Breakfast soft</strong>
+              <span>Polite wobble, no spoon panic.</span>
+            </button>
+            <button class="preset-card" type="button" data-preset="mealprep">
+              <strong>Meal prep hard</strong>
+              <span>Solid yolk, zero gray ring ambition.</span>
+            </button>
+            <button class="preset-card" type="button" data-preset="chaos">
+              <strong>Hard protocol</strong>
+              <span>Maximum structure. Minimum regret.</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-console">
+          <div class="section-heading">
+            <p class="eyebrow">Boil console</p>
+            <h2>Run the protocol</h2>
+          </div>
+
+          <div class="timer-panel">
+            <div class="timer-ring" id="timerRing">
+              <span id="timerText">07:42</span>
+            </div>
+            <div class="timer-actions">
+              <button class="primary-action" id="startPause" type="button">Start</button>
+              <button class="ghost-action" id="resetTimer" type="button">Reset</button>
+              <button class="ghost-action speed-action" id="speedToggle" type="button" aria-pressed="false">10x</button>
+            </div>
+          </div>
+
+          <div class="waiting-panel">
+            <div>
+              <p class="eyebrow">Waiting distraction</p>
+              <h3>Nerd waiting mode</h3>
+            </div>
+            <p class="waiting-text" id="waitingText">Start the timer, then request a joke or learn one real nerd thing while the egg considers its future.</p>
+            <div class="waiting-footer">
+              <span id="waitingCounter">0 jokes / 0 facts deployed</span>
+              <div class="waiting-actions">
+                <button class="ghost-action compact" id="requestJoke" type="button">Joke</button>
+                <button class="ghost-action compact" id="requestFact" type="button">Fact</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="phase-list" id="phaseList"></div>
+
+          <div class="science-panel">
+            <div>
+              <p class="eyebrow">Biochemical model</p>
+              <h3>Texture indices</h3>
+            </div>
+            <div class="science-grid">
+              <div>
+                <span>White set</span>
+                <strong id="whiteSetIndex">68%</strong>
+                <em id="whiteSetMeaning">Soft set</em>
+              </div>
+              <div>
+                <span>Yolk gel</span>
+                <strong id="yolkGelIndex">52%</strong>
+                <em id="yolkGelMeaning">Creamy</em>
+              </div>
+              <div>
+                <span>Overcook</span>
+                <strong id="overcookIndex">8%</strong>
+                <em id="overcookMeaning">Clean finish</em>
+              </div>
+            </div>
+            <p id="scienceNote">Protein gelation is being treated as time-temperature exposure, not a single magic endpoint.</p>
+          </div>
+
+          <div class="chart-panel">
+            <div>
+              <p class="eyebrow">Thermal curve</p>
+              <h3>Predicted boundary and core</h3>
+            </div>
+            <canvas id="chartCanvas" width="640" height="260" aria-label="Predicted thermal curve"></canvas>
+          </div>
+
+          <div class="xsection-panel">
+            <div>
+              <p class="eyebrow">Thermal cross-section</p>
+              <h3>Water, white, and yolk profile</h3>
+            </div>
+            <canvas id="xsectionCanvas" width="640" height="260" aria-label="Predicted egg temperature cross-section"></canvas>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-autopsy">
+          <div class="section-heading">
+            <p class="eyebrow">Egg autopsy</p>
+            <h2>Score the result</h2>
+          </div>
+
+          <div class="control-grid">
+            <label class="control">
+              <span>Yolk score</span>
+              <output id="yolkScoreOut">Set / 74</output>
+              <input id="yolkScore" type="range" min="0" max="100" value="74">
+            </label>
+            <label class="control">
+              <span>White texture</span>
+              <output id="whiteScoreOut">80</output>
+              <input id="whiteScore" type="range" min="0" max="100" value="80">
+            </label>
+            <label class="control">
+              <span>Peelability</span>
+              <output id="peelScoreOut">68</output>
+              <input id="peelScore" type="range" min="0" max="100" value="68">
+            </label>
+          </div>
+
+          <label class="control textarea-control">
+            <span>Autopsy note</span>
+            <textarea id="autopsyNote" rows="4" placeholder="Yolk obeyed. Shell attitude questionable."></textarea>
+          </label>
+
+          <div class="report-panel">
+            <p class="eyebrow">Report</p>
+            <h3 id="autopsyTitle">The egg has confessed.</h3>
+            <p id="autopsyCopy">Save this run to train your future breakfast decisions.</p>
+            <button class="primary-action" id="saveRun" type="button">Save run</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-notebook">
+          <div class="section-heading with-action">
+            <div>
+              <p class="eyebrow">Lab notebook</p>
+              <h2>Saved experiments</h2>
+            </div>
+            <button class="ghost-action compact" id="exportCsv" type="button">CSV</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+
+        <section class="screen" id="screen-library">
+          <div class="section-heading">
+            <p class="eyebrow">Protocol library</p>
+            <h2>Launch a known specimen</h2>
+          </div>
+
+          <div class="library-list">
+            <button class="library-item" type="button" data-preset="ramen">
+              <span>01</span>
+              <strong>Ramen Jam Protocol</strong>
+              <em>6-ish minutes, high drama.</em>
+            </button>
+            <button class="library-item" type="button" data-preset="breakfast">
+              <span>02</span>
+              <strong>Breakfast Control</strong>
+              <em>Soft, repeatable, socially acceptable.</em>
+            </button>
+            <button class="library-item" type="button" data-preset="mealprep">
+              <span>03</span>
+              <strong>Lunchbox Stability</strong>
+              <em>Hard enough to travel, not chalk.</em>
+            </button>
+            <button class="library-item" type="button" data-preset="chaos">
+              <span>04</span>
+              <strong>No Gray Zone</strong>
+              <em>Hard boil with restraint.</em>
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="physics.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
