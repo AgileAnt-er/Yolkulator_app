@@ -165,7 +165,7 @@ function bindElements() {
     "riskLevel",
     "confidenceLevel",
     "timerText",
-    "timerRing",
+    "timerActionLabel",
     "startPause",
     "resetTimer",
     "speedToggle",
@@ -789,14 +789,19 @@ function drawEgg(protocol) {
   ctx.restore();
 
   ctx.fillStyle = "rgba(9, 10, 13, 0.58)";
-  ctx.fillRect(14, 16, 108, 56);
+  ctx.fillRect(14, 16, 184, 96);
   ctx.strokeStyle = "rgba(37, 208, 162, 0.32)";
-  ctx.strokeRect(14.5, 16.5, 107, 55);
+  ctx.strokeRect(14.5, 16.5, 183, 95);
   ctx.fillStyle = "rgba(210, 255, 238, 0.78)";
   ctx.font = "700 12px Cascadia Mono, Consolas, monospace";
   ctx.fillText("X-RAY SCAN", 22, 31);
   ctx.fillText(`FIRMNESS ${state.firmness}`, 22, 49);
   ctx.fillText(`CORE ${protocol.centerTemp.toFixed(1)}°C`, 22, 65);
+
+  ctx.font = "700 10px Cascadia Mono, Consolas, monospace";
+  ctx.fillText(protocol.methodLabel.toUpperCase(), 22, 82);
+  ctx.fillText(`CRACK RISK: ${protocol.risk.toUpperCase()}`, 22, 95);
+  ctx.fillText(`CONFIDENCE: ${protocol.confidence.toUpperCase()}`, 22, 108);
 
   ctx.strokeStyle = "rgba(37, 208, 162, 0.45)";
   ctx.lineWidth = 1;
@@ -927,7 +932,7 @@ function drawChart(protocol) {
   ctx.fillStyle = "#6aa8ff";
   ctx.fillText("boundary", left + 4, top + 12);
   ctx.fillStyle = "#25d0a2";
-  ctx.fillText("core", left + 92, top + 12);
+  ctx.fillText("core target", left + 92, top + 12);
   if (boilX !== null && boilX - left > 28 && transferStartX - boilX > 28) {
     ctx.fillStyle = "#aeb7c7";
     ctx.fillText("boil", boilX + 6, top + 28);
@@ -1052,15 +1057,6 @@ function drawXsection(protocol) {
   ctx.fillText(`tight white ${tightWhiteTemp.toFixed(1)}°C / loose white ${looseWhiteTemp.toFixed(1)}°C`, 360, 144);
   ctx.fillText(`${boundaryLabel} boundary ${boundaryTemp.toFixed(1)}°C`, 360, 166);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
-  ctx.fillRect(360, 190, 210, 1);
-  ctx.fillStyle = "#25d0a2";
-  ctx.font = "800 13px Cascadia Mono, Consolas, monospace";
-  ctx.fillText("white set", 360, 216);
-  ctx.fillText(`${Math.round(snapshot.whiteSetIndex)}%`, 450, 216);
-  ctx.fillStyle = "#ffc247";
-  ctx.fillText("yolk gel", 360, 238);
-  ctx.fillText(`${Math.round(snapshot.yolkGelIndex)}%`, 450, 238);
 }
 
 function getXsectionSnapshot(protocol) {
@@ -1285,9 +1281,11 @@ function renderTimer() {
   const degrees = Math.max(0, Math.min(360, progress * 360));
   const protocol = computeProtocol();
   el.timerText.textContent = state.timerMode === "ramp" ? formatTime(state.coldRampElapsed) : formatTime(state.timerRemaining);
-  el.timerRing.style.background =
+  el.startPause.style.background =
     `radial-gradient(circle, var(--panel) 0 58%, transparent 59%), conic-gradient(var(--yolk) ${degrees}deg, rgba(255, 255, 255, 0.08) ${degrees}deg)`;
-  el.startPause.textContent = getStartButtonLabel();
+  const startLabel = getStartButtonLabel();
+  el.timerActionLabel.textContent = startLabel;
+  el.startPause.setAttribute("aria-label", `${startLabel}, ${el.timerText.textContent}`);
   el.startPause.disabled = state.timerRunning && state.timerMode !== "ramp";
   el.speedToggle.textContent = state.timerSpeed === 1 ? "10x" : "1x";
   el.speedToggle.title = state.timerSpeed === 1 ? "Run timer at 10x speed" : "Return timer to normal speed";
@@ -1316,16 +1314,13 @@ function updateLiveTimerMessage() {
 
 function getStartButtonLabel() {
   if (state.timerMode === "ramp") {
-    return "Water boiling";
+    return "Confirm boiling";
   }
   if (state.timerRunning) {
     return "Running";
   }
   if (state.timerRemaining <= 0 || state.timerMode === "done") {
     return "Again";
-  }
-  if (state.method === "cold" && state.timerMode === "cook" && state.timerRemaining === computeProtocol().seconds) {
-    return "Start ramp";
   }
   return "Start";
 }
@@ -1726,16 +1721,20 @@ function playAlarm() {
     const ctx = state.audioContext;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const now = ctx.currentTime;
     osc.type = "square";
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.16);
-    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.42);
+    osc.frequency.setValueAtTime(784, now);
+    osc.frequency.setValueAtTime(988, now + 0.24);
+    osc.frequency.setValueAtTime(660, now + 0.52);
+    osc.frequency.setValueAtTime(880, now + 0.82);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.28, now + 0.03);
+    gain.gain.setValueAtTime(0.28, now + 0.9);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.25);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.45);
+    osc.start(now);
+    osc.stop(now + 1.3);
   } catch (error) {
     // Sound is opportunistic; unsupported audio should never break the timer.
   }

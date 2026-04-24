@@ -232,17 +232,12 @@
         </section>
 
         <section class="screen" id="screen-console">
-          <div class="section-heading">
-            <p class="eyebrow">Boil console</p>
-            <h2>Run the protocol</h2>
-          </div>
-
           <div class="timer-panel">
-            <div class="timer-ring" id="timerRing">
+            <button class="timer-ring" id="startPause" type="button">
+              <span class="timer-action-label" id="timerActionLabel">Start</span>
               <span id="timerText">07:42</span>
-            </div>
+            </button>
             <div class="timer-actions">
-              <button class="primary-action" id="startPause" type="button">Start</button>
               <button class="ghost-action" id="resetTimer" type="button">Reset</button>
               <button class="ghost-action speed-action" id="speedToggle" type="button" aria-pressed="false">10x</button>
             </div>
@@ -264,6 +259,22 @@
           </div>
 
           <div class="phase-list" id="phaseList"></div>
+
+          <div class="chart-panel">
+            <div>
+              <p class="eyebrow">Thermal curve</p>
+              <h3>Predicted boundary and core</h3>
+            </div>
+            <canvas id="chartCanvas" width="640" height="260" aria-label="Predicted thermal curve"></canvas>
+          </div>
+
+          <div class="xsection-panel">
+            <div>
+              <p class="eyebrow">Thermal cross-section</p>
+              <h3>Water, white, and yolk profile</h3>
+            </div>
+            <canvas id="xsectionCanvas" width="640" height="260" aria-label="Predicted egg temperature cross-section"></canvas>
+          </div>
 
           <div class="science-panel">
             <div>
@@ -288,22 +299,6 @@
               </div>
             </div>
             <p id="scienceNote">Protein gelation is being treated as time-temperature exposure, not a single magic endpoint.</p>
-          </div>
-
-          <div class="chart-panel">
-            <div>
-              <p class="eyebrow">Thermal curve</p>
-              <h3>Predicted boundary and core</h3>
-            </div>
-            <canvas id="chartCanvas" width="640" height="260" aria-label="Predicted thermal curve"></canvas>
-          </div>
-
-          <div class="xsection-panel">
-            <div>
-              <p class="eyebrow">Thermal cross-section</p>
-              <h3>Water, white, and yolk profile</h3>
-            </div>
-            <canvas id="xsectionCanvas" width="640" height="260" aria-label="Predicted egg temperature cross-section"></canvas>
           </div>
         </section>
 
