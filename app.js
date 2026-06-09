@@ -125,6 +125,7 @@ const coldShockCommands = [
 const physics = window.YolkulatorPhysics;
 
 const firmnessLevels = physics.FIRMNESS_LEVELS;
+const feedbackFormUrl = "https://forms.gle/REPLACE_WITH_YOLKULATOR_FORM";
 let protocolCache = { key: "", value: null };
 
 const el = {};
@@ -198,7 +199,8 @@ function bindElements() {
     "autopsyCopy",
     "saveRun",
     "historyList",
-    "exportCsv"
+    "exportCsv",
+    "feedbackLink"
   ].forEach((id) => {
     el[id] = document.getElementById(id);
   });
@@ -1516,6 +1518,7 @@ function startTimer() {
   }
   primeAudio();
   requestWakeLock();
+  trackEvent("timer_started");
   state.timerRunning = true;
   state.timerId = window.setInterval(() => {
     if (state.timerMode === "ramp") {
@@ -1550,6 +1553,7 @@ function startTimer() {
 function beginColdRamp() {
   primeAudio();
   requestWakeLock();
+  trackEvent("timer_started");
   state.timerMode = "ramp";
   state.coldRampElapsed = 0;
   state.timerTotal = Math.max(1, Math.round(state.timeToBoil * 60));
@@ -1660,6 +1664,7 @@ function beginColdShock() {
 
 function finishProtocol() {
   playAlarm();
+  trackEvent("timer_completed");
   state.timerMode = "done";
   state.timerRunning = false;
   if (state.timerId) {
@@ -1814,6 +1819,7 @@ function saveRun() {
   state.history = state.history.slice(0, 20);
   persistHistory();
   renderHistory();
+  trackEvent("autopsy_saved");
   setScreen("notebook");
 }
 
@@ -1865,6 +1871,7 @@ function exportCsv() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+  trackEvent("history_exported");
 }
 
 function csvCell(value) {
@@ -1879,6 +1886,27 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function trackEvent(name) {
+  if (typeof window.sa_event !== "function") {
+    return;
+  }
+  try {
+    window.sa_event(name);
+  } catch (error) {
+    // Analytics is optional; breakfast math must keep running without it.
+  }
+}
+
+function configureLaunchLinks() {
+  if (!el.feedbackLink) {
+    return;
+  }
+  el.feedbackLink.href = feedbackFormUrl;
+  el.feedbackLink.addEventListener("click", () => {
+    trackEvent("feedback_clicked");
+  });
 }
 
 function wireEvents() {
@@ -1946,6 +1974,7 @@ function wireEvents() {
   el.requestFact.addEventListener("click", requestNerdFact);
   el.saveRun.addEventListener("click", saveRun);
   el.exportCsv.addEventListener("click", exportCsv);
+  configureLaunchLinks();
 
   ["yolkScore", "whiteScore", "peelScore"].forEach((id) => {
     el[id].addEventListener("input", updateAutopsyCopy);
